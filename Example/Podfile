@@ -1,0 +1,13 @@
+use_frameworks!
+
+platform :ios, '8.0'
+
+target 'KYBannerView_Example' do
+  pod 'KYBannerView', :path => '../'
+
+  target 'KYBannerView_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
