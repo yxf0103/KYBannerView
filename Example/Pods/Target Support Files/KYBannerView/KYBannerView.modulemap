@@ -1,0 +1,6 @@
+framework module KYBannerView {
+  umbrella header "KYBannerView-umbrella.h"
+
+  export *
+  module * { export * }
+}
