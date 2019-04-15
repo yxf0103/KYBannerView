@@ -1,5 +1,7 @@
 # KYBannerView
 
+a banner view.
+
 [![CI Status](https://img.shields.io/travis/massyxf/KYBannerView.svg?style=flat)](https://travis-ci.org/massyxf/KYBannerView)
 [![Version](https://img.shields.io/cocoapods/v/KYBannerView.svg?style=flat)](https://cocoapods.org/pods/KYBannerView)
 [![License](https://img.shields.io/cocoapods/l/KYBannerView.svg?style=flat)](https://cocoapods.org/pods/KYBannerView)
