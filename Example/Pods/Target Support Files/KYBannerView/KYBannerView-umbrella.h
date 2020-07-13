@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#import "KYBannerImageModel.h"
 #import "KYBannerView.h"
 
 FOUNDATION_EXPORT double KYBannerViewVersionNumber;
