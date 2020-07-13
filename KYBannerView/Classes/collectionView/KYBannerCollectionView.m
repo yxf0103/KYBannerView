@@ -6,17 +6,17 @@
 //  Copyright © 2019 k_yan. All rights reserved.
 //
 
-#import "NDBannerView.h"
-#import "NDBannerCell.h"
+#import "KYBannerCollectionView.h"
+#import "KYBannerCollectionCell.h"
 
-@interface NDBannerView ()<UICollectionViewDelegateFlowLayout,UICollectionViewDataSource>
+@interface KYBannerCollectionView ()<UICollectionViewDelegateFlowLayout,UICollectionViewDataSource>
 
 @property (nonatomic,weak)UICollectionView *imgCollectionView;
 @property (nonatomic,strong)dispatch_source_t timer;
 
 @end
 static int const banner_count = 1000;
-@implementation NDBannerView
+@implementation KYBannerCollectionView
 
 -(instancetype)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
@@ -33,7 +33,7 @@ static int const banner_count = 1000;
         collectionView.pagingEnabled = YES;
         collectionView.showsVerticalScrollIndicator = NO;
         collectionView.showsHorizontalScrollIndicator = NO;
-        [collectionView registerClass:[NDBannerCell class] forCellWithReuseIdentifier:nd_banner_cell];
+        [collectionView registerClass:[KYBannerCollectionCell class] forCellWithReuseIdentifier:ky_banner_collection_cell];
     }
     return self;
 }
@@ -51,7 +51,7 @@ static int const banner_count = 1000;
     _imgCollectionView.backgroundColor = backgroundColor;
 }
 
--(void)setImgModels:(NSArray *)imgModels{
+-(void)setImgModels:(NSArray<KYBannerImageModel> *)imgModels{
     BOOL isOldAni = _imgModels.count > 1 ;
     BOOL isCurrentAni = imgModels.count > 1;
     _imgModels = imgModels;
@@ -71,7 +71,7 @@ static int const banner_count = 1000;
 
 #pragma mark - UICollectionViewDelegateFlowLayout,UICollectionViewDataSource
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    NDBannerCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:nd_banner_cell forIndexPath:indexPath];
+    KYBannerCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:ky_banner_collection_cell forIndexPath:indexPath];
     NSInteger index = indexPath.item % _imgModels.count;
     !_setImgBlock ? : _setImgBlock(cell.imgView,_imgModels[index]);
     return cell;

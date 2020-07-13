@@ -6,9 +6,9 @@
 //  Copyright © 2019 k_yan. All rights reserved.
 //
 
-#import "NDBannerCell.h"
+#import "KYBannerCollectionCell.h"
 
-@implementation NDBannerCell
+@implementation KYBannerCollectionCell
 
 -(instancetype)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
@@ -23,7 +23,6 @@
 -(void)layoutSubviews{
     [super layoutSubviews];
     _imgView.frame = self.contentView.bounds;
-    [_imgView nd_addMaskWithFrame:_imgView.bounds];
 }
 
 @end

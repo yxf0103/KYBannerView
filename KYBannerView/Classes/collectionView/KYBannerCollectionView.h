@@ -7,22 +7,23 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "KYBannerImageModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NDBannerView : UIView
+@interface KYBannerCollectionView : UIView
 
 /*datas*/
-@property (nonatomic,strong)NSArray *imgModels;
+@property (nonatomic,strong)NSArray<KYBannerImageModel> *imgModels;
 
 /*设置图片*/
-@property (nonatomic,copy)void (^setImgBlock)(UIImageView *imgView,id imgModel);
+@property (nonatomic,copy)void (^setImgBlock)(UIImageView *imgView,id<KYBannerImageModel> imgModel);
 
 /*当前页的回调*/
 @property (nonatomic,copy)void (^pageChangedBlock)(int index,int count);
 
 ///选中当前banner的回调
-@property (nonatomic,copy)void (^selectBannerBlock)(id imgModel);
+@property (nonatomic,copy)void (^selectBannerBlock)(id<KYBannerImageModel> imgModel);
 
 @property (nonatomic,assign)BOOL autoScroll;
 

@@ -10,9 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *const nd_banner_cell = @"NDBannerCell";
+static NSString *const ky_banner_collection_cell = @"KYBannerCollectionCell";
 
-@interface NDBannerCell : UICollectionViewCell
+@interface KYBannerCollectionCell : UICollectionViewCell
 
 /*imgView*/
 @property (nonatomic,weak)UIImageView *imgView;
