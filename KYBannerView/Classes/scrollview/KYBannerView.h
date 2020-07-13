@@ -12,12 +12,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^KYSetImgBlock)(UIImageView *imgView,id<KYBannerImageModel> model);
 
+typedef void(^KYIndexChangedBlock)(NSInteger index,NSInteger totalPage);
+
 @interface KYBannerView : UIView
 
--(instancetype)initWithFrame:(CGRect)frame setImg:(nullable KYSetImgBlock)setImgBlock;
--(instancetype)initWithFrame:(CGRect)frame setImg:(nullable KYSetImgBlock)setImgBlock interval:(NSTimeInterval)interval NS_DESIGNATED_INITIALIZER;
-
+/*images*/
 @property (nonatomic,copy)NSArray<KYBannerImageModel> *images;
+
+/*页码改变的回调*/
+@property (nonatomic,copy)KYIndexChangedBlock indexChanged;
+
+/*显示页码*/
+@property (nonatomic,assign)BOOL showPageControll;
+
+-(instancetype)initWithFrame:(CGRect)frame
+                      setImg:(nullable KYSetImgBlock)setImgBlock
+                 activeTimer:(BOOL)activeTimer NS_DESIGNATED_INITIALIZER;
 
 -(void)setPageControllTintColor:(UIColor *)color;
 

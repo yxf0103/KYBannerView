@@ -16,6 +16,10 @@
     NSInteger _index;
 }
 
+/*timer active flag*/
+@property (nonatomic,assign)BOOL timerActive;
+
+
 /*timer*/
 @property (nonatomic,strong)dispatch_source_t timer;
 
@@ -25,35 +29,27 @@
 /*set img*/
 @property (nonatomic,copy)KYSetImgBlock setImgBlock;
 
-///动画间隔
-@property (nonatomic,assign)NSTimeInterval interval;
-
 @end
 
 @implementation KYBannerView
 
 -(instancetype)initWithFrame:(CGRect)frame{
-    return [self initWithFrame:frame setImg:nil];
+    return [self initWithFrame:frame setImg:nil activeTimer:YES];
 }
 
 -(instancetype)initWithCoder:(NSCoder *)aDecoder{
-    return [self initWithFrame:CGRectZero setImg:nil];
+    return [self initWithFrame:CGRectZero setImg:nil activeTimer:YES];
 }
 
--(instancetype)initWithFrame:(CGRect)frame setImg:(nullable KYSetImgBlock)setImgBlock{
-    return [self initWithFrame:frame setImg:setImgBlock interval:3];
-}
-
--(instancetype)initWithFrame:(CGRect)frame setImg:(KYSetImgBlock)setImgBlock interval:(NSTimeInterval)interval{
+-(instancetype)initWithFrame:(CGRect)frame setImg:(nullable KYSetImgBlock)setImgBlock activeTimer:(BOOL)activeTimer{
     if (self = [super initWithFrame:frame]) {
         [self createUI];
         _index = 0;
         _setImgBlock = setImgBlock;
-        _interval = interval;
+        _timerActive = activeTimer;
     }
     return self;
 }
-
 
 -(void)dealloc{
     [self deleteTimer];
@@ -119,6 +115,11 @@
     _pageControl.numberOfPages = images.count;
 }
 
+-(void)setShowPageControll:(BOOL)showPageControll{
+    _showPageControll = showPageControll;
+    _pageControl.hidden = !showPageControll;
+}
+
 #pragma mark - public func
 -(void)setPageControllTintColor:(UIColor *)color{
     _pageControl.pageIndicatorTintColor = color;
@@ -131,6 +132,9 @@
 #pragma mark - private func
 #pragma mark - timer
 -(void)deleteTimer{
+    if (!_timerActive) {
+        return;
+    }
     if (_timer) {
         dispatch_cancel(_timer);
         _timer = nil;
@@ -139,6 +143,9 @@
 }
 
 -(void)pauseTimer{
+    if (!_timerActive) {
+        return;
+    }
     dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
     if (_timer) {
         dispatch_suspend(_timer);
@@ -147,6 +154,9 @@
 }
 
 -(void)resumeTimer{
+    if (!_timerActive) {
+        return;
+    }
     dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
     if (_timer) {
         dispatch_resume(_timer);
@@ -155,9 +165,15 @@
 }
 
 -(void)createTimer{
+    if (!_timerActive) {
+        return;
+    }
     _semaphore = dispatch_semaphore_create(1);
     dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-    dispatch_source_set_timer(timer, DISPATCH_TIME_NOW + _interval * NSEC_PER_SEC, _interval * NSEC_PER_SEC, 0.05 * NSEC_PER_SEC);
+    dispatch_source_set_timer(timer,
+                              dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC),
+                              2 * NSEC_PER_SEC,
+                              0.05 * NSEC_PER_SEC);
     CGFloat width = CGRectGetWidth(self.bounds);
     dispatch_source_set_event_handler(timer, ^{
         self->_mainScrollView.scrollEnabled = NO;
@@ -213,17 +229,26 @@
     if (index != 1) {
         [self indexIncrement:index > 1];
     }
+    if (self.indexChanged) {
+        self.indexChanged(_index + 1, _images.count);
+    }
 }
 
 #pragma mark - delegate
 #pragma mark - UIScrollViewDelegate
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-    dispatch_source_set_timer(_timer, DISPATCH_TIME_FOREVER, _interval * NSEC_PER_SEC, 0.05 * NSEC_PER_SEC);
+    if (!_timerActive) {
+        return;
+    }
+    dispatch_source_set_timer(_timer, DISPATCH_TIME_FOREVER, 2 * NSEC_PER_SEC, 0.05 * NSEC_PER_SEC);
 }
 
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
     [self mainScrollViewDidScroll:scrollView];
-    dispatch_source_set_timer(_timer, dispatch_time(DISPATCH_TIME_NOW, _interval * NSEC_PER_SEC), _interval * NSEC_PER_SEC, 0.05 * NSEC_PER_SEC);
+    if (!_timerActive) {
+        return;
+    }
+    dispatch_source_set_timer(_timer, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), 2 * NSEC_PER_SEC, 0.05 * NSEC_PER_SEC);
 }
 
 @end
