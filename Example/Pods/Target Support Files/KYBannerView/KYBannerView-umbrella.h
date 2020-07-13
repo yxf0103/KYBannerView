@@ -10,6 +10,8 @@
 #endif
 #endif
 
+#import "KYBannerCollectionCell.h"
+#import "KYBannerCollectionView.h"
 #import "KYBannerImageModel.h"
 #import "KYBannerView.h"
 

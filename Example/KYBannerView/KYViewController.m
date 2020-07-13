@@ -10,6 +10,7 @@
 #import "KYBannerView.h"
 #import <UIImageView+WebCache.h>
 #import "KYBannerModel.h"
+#import "KYBannerCollectionView.h"
 
 @interface KYViewController ()
 
@@ -38,7 +39,15 @@
     //@"http://pic43.nipic.com/20140702/3822951_125854430000_2.jpg"
     //@"http://pic31.nipic.com/20130714/1699509_191130287195_2.jpg"
     
-    //org.cocoapods.demo.KYBannerView-Example
+    
+    KYBannerCollectionView *view = [[KYBannerCollectionView alloc] initWithFrame:CGRectMake(0, 300, [UIScreen mainScreen].bounds.size.width, 200)];
+    [self.view addSubview:view];
+    view.autoScroll = YES;
+    view.setImgBlock = ^(UIImageView * _Nonnull imgView, id<KYBannerImageModel>  _Nonnull imgModel) {
+        [imgView sd_setImageWithURL:[NSURL URLWithString:imgModel.banner_image] placeholderImage:nil];
+    };
+    view.imgModels = (NSArray<KYBannerImageModel> *)bannerModels;
+    
     
 }
 
