@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol KYBannerImageModel <NSObject>
 
+-(NSString *)banner_image;
+
 @end
 
 NS_ASSUME_NONNULL_END

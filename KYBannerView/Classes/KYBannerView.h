@@ -6,17 +6,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "KYBannerImageModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^KYSetImgBlock)(UIImageView *imgView,NSString *url);
+typedef void(^KYSetImgBlock)(UIImageView *imgView,id<KYBannerImageModel> model);
 
 @interface KYBannerView : UIView
 
--(instancetype)initWithFrame:(CGRect)frame setImg:(nullable KYSetImgBlock)setImgBlock NS_DESIGNATED_INITIALIZER;
+-(instancetype)initWithFrame:(CGRect)frame setImg:(nullable KYSetImgBlock)setImgBlock;
+-(instancetype)initWithFrame:(CGRect)frame setImg:(nullable KYSetImgBlock)setImgBlock interval:(NSTimeInterval)interval NS_DESIGNATED_INITIALIZER;
 
-/*images*/
-@property (nonatomic,copy)NSArray<NSString *> *images;
+@property (nonatomic,copy)NSArray<KYBannerImageModel> *images;
 
 -(void)setPageControllTintColor:(UIColor *)color;
 
