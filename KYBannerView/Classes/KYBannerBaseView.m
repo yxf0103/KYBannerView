@@ -5,9 +5,9 @@
 //  Created by yxf on 2020/8/3.
 //
 
-#import "KYBannerView.h"
+#import "KYBannerBaseView.h"
 
-@interface KYBannerView ()
+@interface KYBannerBaseView ()
 
 @property (nonatomic,strong)KYBannerConfig *config;
 
@@ -15,7 +15,7 @@
 
 @end
 
-@implementation KYBannerView
+@implementation KYBannerBaseView
 
 -(instancetype)initWithFrame:(CGRect)frame config:(KYBannerConfig *)config{
     if (self = [super initWithFrame:frame]) {

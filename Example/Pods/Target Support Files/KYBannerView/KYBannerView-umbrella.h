@@ -12,9 +12,9 @@
 
 #import "KYBannerCollectionCell.h"
 #import "KYBannerCollectionView.h"
+#import "KYBannerBaseView.h"
 #import "KYBannerConfig.h"
 #import "KYBannerImageModel.h"
-#import "KYBannerView.h"
 #import "KYBannerScrollView.h"
 
 FOUNDATION_EXPORT double KYBannerViewVersionNumber;

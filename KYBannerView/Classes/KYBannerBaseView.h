@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface KYBannerView : UIView
+@interface KYBannerBaseView : UIView
 
 ///images data
 @property (nonatomic,copy)NSArray<KYBannerImageModel> *images;

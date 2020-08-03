@@ -6,11 +6,11 @@
 //  Copyright © 2019 k_yan. All rights reserved.
 //
 
-#import "KYBannerView.h"
+#import "KYBannerBaseView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface KYBannerCollectionView : KYBannerView
+@interface KYBannerCollectionView : KYBannerBaseView
 
 @end
 

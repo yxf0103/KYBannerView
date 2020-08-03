@@ -5,11 +5,11 @@
 //  Created by yxf on 2019/4/12.
 //
 
-#import "KYBannerView.h"
+#import "KYBannerBaseView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface KYBannerScrollView : KYBannerView
+@interface KYBannerScrollView : KYBannerBaseView
 
 @end
 
