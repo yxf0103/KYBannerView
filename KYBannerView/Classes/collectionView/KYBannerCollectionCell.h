@@ -14,7 +14,6 @@ static NSString *const ky_banner_collection_cell = @"KYBannerCollectionCell";
 
 @interface KYBannerCollectionCell : UICollectionViewCell
 
-/*imgView*/
 @property (nonatomic,weak)UIImageView *imgView;
 
 @end

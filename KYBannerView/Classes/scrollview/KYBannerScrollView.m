@@ -5,20 +5,16 @@
 //  Created by yxf on 2019/4/12.
 //
 
-#import "KYBannerView.h"
+#import "KYBannerScrollView.h"
 
-@interface KYBannerView ()<UIScrollViewDelegate>{
+@interface KYBannerScrollView ()<UIScrollViewDelegate>{
     __weak UIScrollView *_mainScrollView;
     __weak UIImageView *_leftImgView;
     __weak UIImageView *_midImgView;
+    __weak UIButton *_mBtn;
     __weak UIImageView *_rightImgView;
-    __weak UIPageControl *_pageControl;
     NSInteger _index;
 }
-
-/*timer active flag*/
-@property (nonatomic,assign)BOOL timerActive;
-
 
 /*timer*/
 @property (nonatomic,strong)dispatch_source_t timer;
@@ -26,27 +22,14 @@
 /*semaphore*/
 @property (nonatomic,strong)dispatch_semaphore_t semaphore;
 
-/*set img*/
-@property (nonatomic,copy)KYSetImgBlock setImgBlock;
-
 @end
 
-@implementation KYBannerView
+@implementation KYBannerScrollView
 
 -(instancetype)initWithFrame:(CGRect)frame{
-    return [self initWithFrame:frame setImg:nil activeTimer:YES];
-}
-
--(instancetype)initWithCoder:(NSCoder *)aDecoder{
-    return [self initWithFrame:CGRectZero setImg:nil activeTimer:YES];
-}
-
--(instancetype)initWithFrame:(CGRect)frame setImg:(nullable KYSetImgBlock)setImgBlock activeTimer:(BOOL)activeTimer{
     if (self = [super initWithFrame:frame]) {
-        [self createUI];
         _index = 0;
-        _setImgBlock = setImgBlock;
-        _timerActive = activeTimer;
+        [self createUI];
     }
     return self;
 }
@@ -72,16 +55,15 @@
     UIImageView *mView = [[UIImageView alloc] init];
     [scrollView addSubview:mView];
     _midImgView = mView;
+    mView.userInteractionEnabled = YES;
+    UIButton *mBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [mView addSubview:mBtn];
+    [mBtn addTarget:self action:@selector(middleBannerClicked:) forControlEvents:UIControlEventTouchUpInside];
+    _mBtn = mBtn;
     
     UIImageView *rView = [[UIImageView alloc] init];
     [scrollView addSubview:rView];
     _rightImgView = rView;
-    
-    UIPageControl *pc = [[UIPageControl alloc] init];
-    [self addSubview:pc];
-    pc.pageIndicatorTintColor = [UIColor grayColor];
-    pc.currentPageIndicatorTintColor = [UIColor whiteColor];
-    _pageControl = pc;
 }
 
 -(void)layoutSubviews{
@@ -92,15 +74,14 @@
     _mainScrollView.contentSize = CGSizeMake(width * 3, 0);
     _leftImgView.frame = CGRectMake(0, 0, width, height);
     _midImgView.frame = CGRectMake(width, 0, width, height);
+    _mBtn.frame = _midImgView.bounds;
     _rightImgView.frame = CGRectMake(width * 2, 0, width, height);
-    _pageControl.frame = CGRectMake(0, 0, 100, 40);
-    _pageControl.center = CGPointMake(width / 2, height - 20);
     _mainScrollView.contentOffset = CGPointMake(width, 0);
 }
 
 #pragma mark - setter
 -(void)setImages:(NSArray<KYBannerImageModel> *)images{
-    _images = images;
+    [super setImages:images];
     if (images.count > 1) {
         [self createTimer];
         _mainScrollView.scrollEnabled = YES;
@@ -112,29 +93,16 @@
             self.setImgBlock(_midImgView, images.firstObject);
         }
     }
-    _pageControl.numberOfPages = images.count;
 }
 
--(void)setShowPageControll:(BOOL)showPageControll{
-    _showPageControll = showPageControll;
-    _pageControl.hidden = !showPageControll;
-}
-
-#pragma mark - public func
--(void)setPageControllTintColor:(UIColor *)color{
-    _pageControl.pageIndicatorTintColor = color;
-}
-
--(void)setPageControllCurrentTintColor:(UIColor *)color{
-    _pageControl.currentPageIndicatorTintColor = color;
+#pragma mark - action
+-(void)middleBannerClicked:(UIButton *)btn{
+    !self.selectBannerBlock ? : self.selectBannerBlock(self.images[_index]);
 }
 
 #pragma mark - private func
 #pragma mark - timer
 -(void)deleteTimer{
-    if (!_timerActive) {
-        return;
-    }
     if (_timer) {
         dispatch_cancel(_timer);
         _timer = nil;
@@ -143,7 +111,7 @@
 }
 
 -(void)pauseTimer{
-    if (!_timerActive) {
+    if (!self.autoScroll) {
         return;
     }
     dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
@@ -154,7 +122,7 @@
 }
 
 -(void)resumeTimer{
-    if (!_timerActive) {
+    if (!self.autoScroll) {
         return;
     }
     dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
@@ -165,48 +133,53 @@
 }
 
 -(void)createTimer{
-    if (!_timerActive) {
+    if (!self.autoScroll) {
         return;
     }
     _semaphore = dispatch_semaphore_create(1);
     dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
     dispatch_source_set_timer(timer,
-                              dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC),
-                              2 * NSEC_PER_SEC,
+                              dispatch_time(DISPATCH_TIME_NOW, self.autoScrollInterval * NSEC_PER_SEC),
+                              self.autoScrollInterval * NSEC_PER_SEC,
                               0.05 * NSEC_PER_SEC);
-    CGFloat width = CGRectGetWidth(self.bounds);
+    __weak typeof(self) ws = self;
     dispatch_source_set_event_handler(timer, ^{
-        self->_mainScrollView.scrollEnabled = NO;
-        dispatch_suspend(self.timer);
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             self->_mainScrollView.contentOffset = CGPointMake(width * 2, 0);
-                         } completion:^(BOOL finished) {
-                             self->_mainScrollView.contentOffset = CGPointMake(width, 0);
-                             [self indexIncrement:YES];
-                             dispatch_resume(self.timer);
-                             self->_mainScrollView.scrollEnabled = YES;
-                         }];
+        if (!ws) { return; }
+        [ws timerAction];
     });
     dispatch_resume(timer);
-    
     _timer = timer;
+}
+
+-(void)timerAction{
+    self->_mainScrollView.scrollEnabled = NO;
+    dispatch_suspend(self.timer);
+    CGFloat width = CGRectGetWidth(self.bounds);
+    [UIView animateWithDuration:0.25
+                     animations:^{
+        self->_mainScrollView.contentOffset = CGPointMake(width * 2, 0);
+    } completion:^(BOOL finished) {
+        self->_mainScrollView.contentOffset = CGPointMake(width, 0);
+        [self indexIncrement:YES];
+        dispatch_resume(self.timer);
+        self->_mainScrollView.scrollEnabled = YES;
+    }];
 }
 
 #pragma mark - control
 -(void)indexIncrement:(BOOL)add{
-    if (_images.count == 0) {
+    if (self.images.count == 0) {
         return;
     }
     _index += add ? 1 : -1;
     if (_index < 0) {
-        _index = _images.count - 1;
+        _index = self.images.count - 1;
     }
     
-    if (_index >= _images.count) {
+    if (_index >= self.images.count) {
         _index = 0;
     }
-    _pageControl.currentPage = _index;
+    self.pageControl.currentPage = _index;
     [self resetImgs];
 }
 
@@ -214,13 +187,13 @@
     if (!self.setImgBlock) {
         return;
     }
-    self.setImgBlock(_midImgView, _images[_index]);
+    self.setImgBlock(_midImgView, self.images[_index]);
     
-    NSInteger leftIndex = (_index - 1) >= 0 ? (_index - 1) : _images.count - 1;
-    self.setImgBlock(_leftImgView, _images[leftIndex]);
+    NSInteger leftIndex = (_index - 1) >= 0 ? (_index - 1) : self.images.count - 1;
+    self.setImgBlock(_leftImgView, self.images[leftIndex]);
     
-    NSInteger rightIndex = (_index + 1) < _images.count ? (_index + 1) : 0;
-    self.setImgBlock(_rightImgView, _images[rightIndex]);
+    NSInteger rightIndex = (_index + 1) < self.images.count ? (_index + 1) : 0;
+    self.setImgBlock(_rightImgView, self.images[rightIndex]);
 }
 
 -(void)mainScrollViewDidScroll:(UIScrollView *)scrollView{
@@ -229,26 +202,33 @@
     if (index != 1) {
         [self indexIncrement:index > 1];
     }
-    if (self.indexChanged) {
-        self.indexChanged(_index + 1, _images.count);
+    if (self.indexChangedBlock) {
+        self.indexChangedBlock(_index + 1, self.images.count);
     }
 }
 
 #pragma mark - delegate
 #pragma mark - UIScrollViewDelegate
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-    if (!_timerActive) {
+    if (!self.autoScroll) {
         return;
     }
-    dispatch_source_set_timer(_timer, DISPATCH_TIME_FOREVER, 2 * NSEC_PER_SEC, 0.05 * NSEC_PER_SEC);
+    dispatch_source_set_timer(_timer,
+                              DISPATCH_TIME_FOREVER,
+                              self.autoScrollInterval * NSEC_PER_SEC,
+                              0.05 * NSEC_PER_SEC);
 }
 
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
     [self mainScrollViewDidScroll:scrollView];
-    if (!_timerActive) {
+    if (!self.autoScroll) {
         return;
     }
-    dispatch_source_set_timer(_timer, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), 2 * NSEC_PER_SEC, 0.05 * NSEC_PER_SEC);
+    dispatch_source_set_timer(_timer,
+                              dispatch_time(DISPATCH_TIME_NOW,
+                                            self.autoScrollInterval  * NSEC_PER_SEC),
+                              self.autoScrollInterval * NSEC_PER_SEC,
+                              0.05 * NSEC_PER_SEC);
 }
 
 @end

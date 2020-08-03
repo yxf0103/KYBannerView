@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'KYBannerView'
-  s.version          = '0.2.1'
+  s.version          = '0.3.0'
   s.summary          = 'KYBannerView'
 
 # This description is used to generate tags and improve search results.
@@ -38,5 +38,5 @@ banner view for ios.
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'SDWebImage'
+  # s.dependency 'KYTimer'
 end

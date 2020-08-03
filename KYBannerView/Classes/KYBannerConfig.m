@@ -9,4 +9,15 @@
 
 @implementation KYBannerConfig
 
+-(instancetype)init{
+    if (self = [super init]) {
+        _autoScroll = YES;
+        _duration = 3;
+        _showPageControl = YES;
+        _currentColor = [UIColor whiteColor];
+        _tintColor = [UIColor grayColor];
+    }
+    return self;
+}
+
 @end
