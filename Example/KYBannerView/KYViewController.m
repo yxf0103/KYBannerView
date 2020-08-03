@@ -7,8 +7,8 @@
 //
 
 #import "KYViewController.h"
-#import "KYBannerView.h"
 #import <UIImageView+WebCache.h>
+#import "KYBannerScrollView.h"
 #import "KYBannerModel.h"
 #import "KYBannerCollectionView.h"
 
@@ -22,10 +22,14 @@
 {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor lightGrayColor];
-    KYBannerView *bannerView = [[KYBannerView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 200) setImg:^(UIImageView * _Nonnull imgView, id<KYBannerImageModel>  _Nonnull model) {
-        [imgView sd_setImageWithURL:[NSURL URLWithString:model.banner_image] placeholderImage:nil];
-    } activeTimer:YES];
+    KYBannerScrollView *bannerView = [[KYBannerScrollView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 200)];
     [self.view addSubview:bannerView];
+    bannerView.setImgBlock = ^(UIImageView * _Nonnull imgView, id<KYBannerImageModel>  _Nonnull imgModel) {
+        [imgView sd_setImageWithURL:[NSURL URLWithString:imgModel.banner_image] placeholderImage:nil];
+    };
+    bannerView.selectBannerBlock = ^(id<KYBannerImageModel>  _Nonnull imgModel) {
+        NSLog(@"===>%@",imgModel.banner_image);
+    };
     NSArray *images = @[@"http://pic17.nipic.com/20111025/533255_215834243000_2.jpg",
                         @"http://pic43.nipic.com/20140702/3822951_125854430000_2.jpg",
                         @"http://pic31.nipic.com/20130714/1699509_191130287195_2.jpg"];
@@ -42,19 +46,12 @@
     
     KYBannerCollectionView *view = [[KYBannerCollectionView alloc] initWithFrame:CGRectMake(0, 300, [UIScreen mainScreen].bounds.size.width, 200)];
     [self.view addSubview:view];
-    view.autoScroll = YES;
     view.setImgBlock = ^(UIImageView * _Nonnull imgView, id<KYBannerImageModel>  _Nonnull imgModel) {
         [imgView sd_setImageWithURL:[NSURL URLWithString:imgModel.banner_image] placeholderImage:nil];
     };
-    view.imgModels = (NSArray<KYBannerImageModel> *)bannerModels;
+    view.images = (NSArray<KYBannerImageModel> *)bannerModels;
     
     
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

@@ -10,10 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^KYSetImgBlock)(UIImageView *imgView,id<KYBannerImageModel> model);
-
-typedef void(^KYIndexChangedBlock)(NSInteger index,NSInteger totalPage);
-
 @interface KYBannerView : UIView
 
 /*images*/

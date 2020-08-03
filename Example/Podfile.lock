@@ -1,5 +1,5 @@
 PODS:
-  - KYBannerView (0.2.0)
+  - KYBannerView (0.3.0)
   - SDWebImage (4.4.6):
     - SDWebImage/Core (= 4.4.6)
   - SDWebImage/Core (4.4.6)
@@ -17,7 +17,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  KYBannerView: 42bbe23b19f1cdbb1a7701d972ff802e539e45be
+  KYBannerView: 2dcaad392f14a091a0b5c4c547b39c97728efb28
   SDWebImage: 3f3f0c02f09798048c47a5ed0a13f17b063572d8
 
 PODFILE CHECKSUM: 2347a3764bd8352e3107977427a11edcda0aa6e7
