@@ -59,8 +59,16 @@
     if (self.pageControl) {
         CGFloat width = CGRectGetWidth(self.bounds);
         CGFloat height = CGRectGetHeight(self.bounds);
-        self.pageControl.frame = CGRectMake(0, 0, 100, 40);
-        self.pageControl.center = CGPointMake(width / 2, height - 20);
+        if (@available(iOS 14.0, *)) {
+            CGSize size = [self.pageControl sizeForNumberOfPages:self.pageControl.numberOfPages];
+            self.pageControl.frame = CGRectMake((width - size.width)/2,
+                                                height - size.height,
+                                                size.width,
+                                                size.height);
+        } else {
+            self.pageControl.frame = CGRectMake(0, 0, 100, 40);
+            self.pageControl.center = CGPointMake(width / 2, height - 20);
+        }
         [self bringSubviewToFront:self.pageControl];
     }
 }
